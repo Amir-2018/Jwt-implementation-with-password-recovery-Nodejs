@@ -22,10 +22,8 @@ const userSchema = new mongoose.Schema({
   Gouvernorat: {
     type: String,
   },
-  Catégorie: {
-    type: String,
-    // required: [true, 'Please enter a categorie'],
-    lowercase: true,
+  Categorie: {
+    type: String
   },
   description: {
     type: String,   

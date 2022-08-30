@@ -35,7 +35,10 @@ const Storage = multer.diskStorage({
 })
 
 const upload = multer({
-  storage : Storage
+  storage : Storage,
+  limits: {
+    fileSize: 5000000,
+  },
 }).single('testImage')
 
 module.exports.update_user = (req,res)=>{
@@ -50,11 +53,17 @@ module.exports.update_user = (req,res)=>{
 
       upload(req,res,(err)=>{
         if(err){
-            console.log(err)    
+          if(err.code == 'LIMIT_FILE_SIZE'){
+            res.status(500).json({
+                message : "Image size is over than 5MB"
+            })   
+        }     
         }  
         else{
-                const fileSize = parseInt(req.headers["contentType"])
-                console.log(fileSize)
+
+          const str = req.file.originalname;
+          const slug = str.split('.').pop();
+          if(slug =='jpg' || slug =='png' || slug =='jpeg' || slug =='gif'|| slug =='bmp' ){
                 const user = new User({
                   full_name : req.body.full_name,
                   email : req.body.email,
@@ -93,7 +102,12 @@ module.exports.update_user = (req,res)=>{
                     message : 'Execption while updating user '+err 
                 })
                 })
-            }
+              }else{
+                res.status(500).json({
+                  message : 'Only image are accepted '
+              })
+              }
+            } // else 
           }) // upload
     }
   })

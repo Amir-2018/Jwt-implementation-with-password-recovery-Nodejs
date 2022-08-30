@@ -30,51 +30,67 @@ module.exports.add_restaurant = (req, res) => {
         let user = await User.findById(decodedToken.id);
         upload(req,res,(err)=>{
           if(err){
-              console.log(err)    
-          }  
-          
-          else{
-            
-            const resto = new Restaurant({
-              name : req.body.name,
-              email : req.body.email,
-              telephone : req.body.telephone,
-              adresse : req.body.adresse,
-              Gouvernorat : req.body.Gouvernorat,
-              Catégorie : req.body.Catégorie,
-              description : req.body.description,
-              temps : req.body.temps,
-              files : req.files 
-          })
-          var obj = resto
-          obj['raiting'] = []
-          obj['id_user'] = user._id ; 
-          const result = Math.random().toString(36).substring(2,7);
-          obj['identifiant'] = result
-          obj.raiting_value = 0
-            Restaurant.create(obj)
-            .then(result=>{
-              if(result){
-                  res.status(200).json({
-                      message : 'Restaurant created with success '
-                  })
+            console.log(err)  
+          }else{
+            var countI  = 0 ; 
+            // Loop array of files 
+            var str,slug ; 
+            for (let i=0;i<req.files.length;i++){
+              str = req.files[i].originalname;
+              slug = str.split('.').pop();
+              if(slug =='jpg' || slug =='png' || slug =='jpeg' || slug =='gif'|| slug =='bmp' ){
+                 console.log('Thats ok...');
               }else{
-                  res.status(200).json({
-                      message : 'Restaurant does not be created'
-                  })
+                 countI  ++ ;
               }
-          })
+            }
+            
+            
+            if(countI == 0){
+              const resto = new Restaurant({
+                name : req.body.name,
+                email : req.body.email,
+                telephone : req.body.telephone,
+                adresse : req.body.adresse,
+                Gouvernorat : req.body.Gouvernorat,
+                Categorie : req.body.Categorie,
+                description : req.body.description,
+                temps : req.body.temps,
+                files : req.files 
+              })
+              var obj = resto
+              obj['raiting'] = []
+              obj['id_user'] = user._id ; 
+              const result = Math.random().toString(36).substring(2,7);
+              obj['identifiant'] = result
+              obj.raiting_value = 0
+              Restaurant.create(obj)
+              .then(result=>{
+                if(result){
+                    res.status(200).json({
+                        message : 'Restaurant created with success '
+                    })
+                }else{
+                      res.status(200).json({
+                          message : 'Restaurant does not be created'
+                     })
+                }
+              })
+          }else{
+            res.status(500).json({
+              message : 'Only image are accepted '
+            })
+          }
           }
         })
         
-      }
+      }// token 
     })
   }
 
 
 
-         
-    }
+}
       
     function raitRestaurant(rait){
       var som = 0 ; 
@@ -104,7 +120,7 @@ module.exports.add_restaurant = (req, res) => {
        // // calcule total of raiting 
         var av_total = 0 ; 
         for(var a=0;a<uniqueArr.length;a++)
-          av_total+=uniqueArr[a]
+        av_total+=uniqueArr[a]
         av_total*=5
         console.log('av_totak = '+av_total)
         var raiting_final = average_rait/av_total
@@ -317,6 +333,7 @@ module.exports.add_restaurant = (req, res) => {
           .then(result =>{
 
               if(result){
+                      
                       (result.raiting).push(req.body.raiting)
                       Restaurant.create(result).then(rait=>{
                           if(rait){
@@ -416,7 +433,7 @@ module.exports.add_item_to_menu = (req, res) => {
             categorie : req.body.categorie,
             prix : req.body.prix,
             ingredients : req.body.ingredients,
-            advertissement : req.body.Gouvernorat,
+            advertissement : req.body.advertissement,
             images : [],
             videos  : [],
         })
@@ -670,9 +687,8 @@ module.exports.find_by_name = (req, res) => {
 
     var filter_request = {
       name:req.body.name,
-      raiting_value:req.body.score,
       Gouvernorat:req.body.Gouvernorat,
-      catégorie:req.body.Catégorie
+      Categorie:req.body.Categorie
     };
 
     // delete attribute with null or any
@@ -682,13 +698,30 @@ module.exports.find_by_name = (req, res) => {
         delete filter_request[key]
       }
     });
-   console.log(filter_request)
+    // calculate raiting of restaurant
     Restaurant.find(filter_request)
     .then(result=>{
       if(result){
-        res.status(200).json({
-          message : raitRestaurant(result)
-      })
+        if(req.body.score =="" || req.body.score=="any" ||req.body.score=="null")
+          {
+            res.status(200).json({
+              message : result
+            })
+          }else{
+            if(result.length>0){
+              var tab = []
+              for(let i=0 ;i<result.length;i++){
+                if(req.body.score == calRait(result[i]).raiting_value){
+                  tab.push(result[i])
+                }
+              }
+              res.status(200).json({
+                message : tab
+            })
+            }
+          }
+      
+    
       }else{
         res.status(500).json({
           message : 'No data founded'
@@ -696,9 +729,7 @@ module.exports.find_by_name = (req, res) => {
       } 
     })
     .catch(err=>{
-      res.status(500).json({
-        message : 'Error with retriving data'
-    })
+      console.log(err)
     })
   }
 

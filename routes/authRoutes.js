@@ -11,7 +11,6 @@ router.post('/login', authController.login_post);
 router.get('/logout', authController.logout_get);
 router.get('/getUserById/:id',requireAuth,checkUser, crudController.getUserById);
 router.get('/getAllUsers',requireAuth,checkUser, crudController.getAllUsers);
-
 router.delete('/delUser/:id',requireAuth,checkUser, crudController.del_user);
 router.put('/updateUser/',requireAuth,checkUser, crudController.update_user);
 // Restaurant functions
@@ -26,7 +25,7 @@ router.get('/getRestoListId/:id',requireAuth,checkUser, restoController.get_rest
 router.delete('/del_res/:id',requireAuth,checkUser, restoController.del_res);
 // Add raiting to restaurant 
 router.post('/add_raiting/:id',requireAuth,checkUser,restoController.add_raiting);
-router.post('/add_item/',restoController.add_item_to_menu);
+router.post('/add_item/',restoController.add_item_to_menu);// To test
 // Add raiting to restaurant 
 router.post('/add_raiting_to_food/:id',requireAuth,checkUser,restoController.add_raiting_to_food );
 router.get('/get_restaurant_menu/:id',requireAuth,checkUser,restoController.get_restaurant_menu);
