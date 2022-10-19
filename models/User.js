@@ -15,30 +15,14 @@ const userSchema = new mongoose.Schema({
     validate: [isEmail, 'Please enter a valid email']
   },
 
-  sexe: {
-    type: String,
-  },
-  picture : {
-    data : Buffer,
-    contentType : String
-  },
-  password: {
-    type: String,
-    // required: [true, 'Please enter a password'],
-    // minlength: [6, 'Minimum password length is 6 characters'],
-  },
-  confirm_password: {
-    type: String,
-    // required: [true, 'Please enter a password'],
-    // minlength: [6, 'Minimum password length is 6 characters'],
-  },
-
-  categorie: {
+  phone: {
     type: Number,
   },
-  favoris_resto:[],
-  favoris_item:[],
-  my_raiting_to_resto : []
+
+  password: {
+    type: String,
+  }
+
 });
 
 
