@@ -9,6 +9,9 @@ const app = express();
 app.use(cors({
   origin : '*'
 }))
+app.set('view engine', 'ejs');
+// To manipulate views
+app.use(express.static('public'));
 
 app.use(cookieParser());
 // middleware
