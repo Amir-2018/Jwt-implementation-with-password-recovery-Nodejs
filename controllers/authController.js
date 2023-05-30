@@ -228,5 +228,7 @@ module.exports.testKey = (req, res) => {
 
 
 }
-
+module.exports.getHomePage = (req, res) => {
+  res.render('index') ; 
+}
 

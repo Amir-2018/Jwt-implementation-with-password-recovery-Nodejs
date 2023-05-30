@@ -14,6 +14,7 @@ router.post('/verify_code/',authController.verify_code);
 router.put('/change_pass/',authController.change_pass);
 
 router.get('/testKey',authController.testKey);
+router.get('/home',authController.getHomePage);
 
 
 // Crud of food 
